@@ -1,45 +1,43 @@
 
-# AI Machine Failure Predictor
-# Stage 3: User input and validation
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
 
-def predict_machine(temperature, rpm, vibration):
-    if temperature > 90 or vibration > 8:
-        return "Potential failure"
-    elif temperature > 80 and vibration > 5:
-        return "Potential failure"
-    else:
-        return "Normal"
+print("Scikit-learn is working!")
+print("NumPy version:", np.__version__)
 
+X = np.array([
+    [50, 1000, 1],
+    [60, 1500, 2],
+    [70, 1800, 3],
+    [95, 1500, 9],
+    [100, 2000, 10],
+    [85, 1200, 8],
+    [55, 1400, 1.5],
+    [105, 2500, 11],
+    [65, 1600, 2],
+    [92, 1800, 9.5],
+    [75, 1700, 4],
+    [98, 2200, 10]
+])
 
-print("================================")
-print(" AI MACHINE FAILURE PREDICTOR")
-print("================================")
+# 0 = Normal, 1 = Potential failure
+y = np.array([0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1])
 
-try:
-    temperature = float(input("Enter temperature (C): "))
-    rpm = float(input("Enter motor speed (RPM): "))
-    vibration = float(input("Enter vibration (mm/s): "))
+model = RandomForestClassifier(
+    n_estimators=100,
+    random_state=42
+)
 
-    # Validate the readings
-    if not 0 <= temperature <= 150:
-        print("Error: Temperature must be 0 to 150 C.")
-    elif not 0 < rpm <= 10000:
-        print("Error: RPM must be above 0 and at most 10000.")
-    elif not 0 <= vibration <= 30:
-        print("Error: Vibration must be 0 to 30 mm/s.")
-    else:
-        result = predict_machine(
-            temperature, rpm, vibration
-        )
+model.fit(X, y)
 
-        print("\n---------- RESULT ----------")
-        print("Temperature:", temperature, "C")
-        print("Motor speed:", rpm, "RPM")
-        print("Vibration:", vibration, "mm/s")
-        print("Prediction:", result)
-        print("----------------------------")
+machine = np.array([[95, 1500, 9]])
+prediction = model.predict(machine)[0]
 
-except ValueError:
-    print("Error: Please enter numbers only.")
+print("Training completed successfully!")
+print("Test readings:", machine[0])
+print(
+    "Prediction:",
+    "Potential failure" if prediction == 1 else "Normal"
+)
 
 
