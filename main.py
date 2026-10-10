@@ -1,33 +1,31 @@
 
-import numpy as np
-from sklearn.ensemble import RandomForestClassifier
+# AI Machine Failure Predictor
+# Beginner version: no external libraries required
 
-# Machine data: temperature, RPM, vibration
-X = np.array([
-    [50, 1000, 1],
-    [60, 1500, 2],
-    [70, 1800, 3],
-    [95, 1500, 9],
-    [100, 2000, 10],
-    [85, 1200, 8],
-    [55, 1400, 1.5],
-    [105, 2500, 11]
-])
+def predict_machine(temperature, rpm, vibration):
+    if temperature > 90 or vibration > 8:
+        return "Potential failure"
+    elif temperature > 80 and vibration > 5:
+        return "Potential failure"
+    else:
+        return "Normal"
 
-# 0 = Normal, 1 = Potential failure
-y = np.array([0, 0, 0, 1, 1, 1, 0, 1])
 
-# Train the machine learning model
-model = RandomForestClassifier(
-    n_estimators=100,
-    random_state=42
-)
-model.fit(X, y)
+print("================================")
+print(" AI MACHINE FAILURE PREDICTOR")
+print("================================")
 
-# Predict a new machine's condition
-machine = np.array([[95, 1500, 9]])
-prediction = model.predict(machine)[0]
+temperature = 95
+rpm = 1500
+vibration = 9.0
 
-print("AI MACHINE FAILURE PREDICTOR")
-print("Prediction:",
-      "Potential failure" if prediction == 1 else "Normal")
+print("Temperature:", temperature, "C")
+print("Motor speed:", rpm, "RPM")
+print("Vibration:", vibration, "mm/s")
+
+result = predict_machine(temperature, rpm, vibration)
+
+print("--------------------------------")
+print("Prediction:", result)
+print("--------------------------------")
+
