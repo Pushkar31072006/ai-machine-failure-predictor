@@ -1,61 +1,57 @@
+t_interactively(model):
+    print("\n========== ENTER SENSOR READINGS ==========")
+    print("Enter the current machine sensor values.")
+    print("Temperature values are in Kelvin; tool wear is in minutes.\n")
 
-import numpy as np
-from sklearn.ensemble import RandomForestClassifier
+    air_temp = get_number("Air temperature [K]: ", 250, 400)
+    process_temp = get_number("Process temperature [K]: ", 250, 450)
+    rpm = get_number("Rotational speed [rpm]: ", 0, 10000)
+    torque = get_number("Torque [Nm]: ", 0, 500)
+    tool_wear = get_number("Tool wear [min]: ", 0, 1000)
 
-# Training examples: temperature, RPM, vibration
-X = np.array([
-    [50, 1000, 1],
-    [60, 1500, 2],
-    [70, 1800, 3],
-    [95, 1500, 9],
-    [100, 2000, 10],
-    [85, 1200, 8],
-    [55, 1400, 1.5],
-    [105, 2500, 11],
-    [65, 1600, 2],
-    [92, 1800, 9.5],
-    [75, 1700, 4],
-    [98, 2200, 10]
-])
+    sample = pd.DataFrame(
+        [[air_temp, process_temp, rpm, torque, tool_wear]],
+        columns=FEATURES,
+    )
+    prediction = int(model.predict(sample)[0])
 
-# 0 = Normal, 1 = Potential failure
-y = np.array([0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1])
-
-model = RandomForestClassifier(
-    n_estimators=100,
-    random_state=42
-)
-model.fit(X, y)
-
-print("AI MACHINE FAILURE PREDICTOR")
-print("Model training completed!")
-
-try:
-    temperature = float(input("Temperature (C): "))
-    rpm = float(input("Motor speed (RPM): "))
-    vibration = float(input("Vibration (mm/s): "))
-
-    if not 0 <= temperature <= 150:
-        print("Error: Temperature must be 0 to 150 C.")
-    elif not 0 < rpm <= 10000:
-        print("Error: RPM must be above 0 and at most 10000.")
-    elif not 0 <= vibration <= 30:
-        print("Error: Vibration must be 0 to 30 mm/s.")
+    print("\n========== PREDICTION ==========")
+    if prediction == 1:
+        print("Prediction: POTENTIAL MACHINE FAILURE")
+        print("Action: Inspect the machine and verify sensor readings.")
     else:
-        readings = np.array([[temperature, rpm, vibration]])
-        prediction = model.predict(readings)[0]
+        print("Prediction: NO FAILURE PREDICTED")
+        print("Action: Continue normal monitoring and follow maintenance rules.")
 
-        print("\n--- RESULT ---")
-        print("Temperature:", temperature, "C")
-        print("RPM:", rpm)
-        print("Vibration:", vibration, "mm/s")
-        print(
-            "Prediction:",
-            "Potential failure" if prediction == 1 else "Normal"
-        )
+    if hasattr(model, "predict_proba"):
+        probability = model.predict_proba(sample)[0]
+        failure_probability = float(probability[list(model.classes_).index(1)])
+        print(f"Model-estimated failure probability: {failure_probability:.1%}")
 
-except ValueError:
-    print("Error: Please enter numbers only.")
+    print(
+        "\nImportant: This prediction is not a guarantee. Do not use this "
+        "educational model as the sole basis for real-world safety decisions."
+    )
+
+
+def main():
+    csv_path = locate_dataset()
+    print(f"Loading dataset: {csv_path.name}")
+    df = load_dataset(csv_path)
+    print(f"Dataset loaded successfully: {df.shape[0]} rows, {df.shape[1]} columns")
+
+    model = train_and_evaluate(df)
+
+    while True:
+        predict_interactively(model)
+        again = input("\nPredict another reading? (y/n): ").strip().lower()
+        if again not in {"y", "yes"}:
+            print("Finished. Thank you for trying the AI Machine Failure Predictor.")
+            break
+
+
+if __name__ == "__main__":
+    main()
 
 
 
