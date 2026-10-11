@@ -57,3 +57,5 @@ This is a student learning project, not a certified predictive-maintenance produ
 ## Credits
 
 Dataset: AI4I 2020 Predictive Maintenance Dataset, UCI Machine Learning Repository. See the dataset page above for original attribution and license details.
+pandas>=2.0
+scikit-learn>=1.3
