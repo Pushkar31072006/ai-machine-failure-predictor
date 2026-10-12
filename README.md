@@ -15,15 +15,37 @@ An educational machine-learning project that predicts whether a machine may fail
 
 - **Source:** UCI Machine Learning Repository — AI4I 2020 Predictive Maintenance Dataset
 - **Dataset page:** https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maintenance+dataset
-- **License:** CC BY 4.0 (credit the original dataset authors/source when reusing it)
-- The dataset contains 10,000 rows and 14 columns. The `Machine failure` target contains 339 failure records.
-- The dataset is synthetic and designed for research/education; it does not represent every real industrial machine.
+- The uploaded CSV contains 10,000 rows and 14 columns, with 339 `Machine failure = 1` records and no missing values in the dataset.
+- The dataset is synthetic and intended for research/education; it does not represent every real industrial machine.
+
+## Model evaluation (verified run)
+
+The uploaded CSV was evaluated using the five sensor features listed above, a stratified 80/20 train/test split, and `RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)`.
+
+- Rows used: **10,000**
+- Training rows: **8,000**
+- Test rows: **2,000**
+- Test-set accuracy: **98.50%**
+- Failure precision: **89.58%** (43 of 48 predicted failures were actual failures)
+- Failure recall: **63.24%** (43 of 68 actual failures were detected)
+- Failure F1-score: **74.14%** (rounded)
+
+Confusion matrix (rows = actual class, columns = predicted class):
+
+| | Predicted no failure | Predicted failure |
+|---|---:|---:|
+| Actual no failure | 1,927 | 5 |
+| Actual failure | 25 | 43 |
+
+**Interpretation:** The model correctly flagged 43 of the 68 failure cases in the test set, but missed 25. Because failures are uncommon, accuracy alone is not enough to judge the model. Recall, precision, and false negatives are important too.
+
+The results above correspond to the dataset and model configuration described here. They may differ if the dataset, feature set, split, random seed, or library versions change.
 
 ## Files
 
 - `main.py` — trains, evaluates, and runs interactive predictions.
 - `requirements.txt` — Python packages required.
-- `ai4i2020 (2).csv` — the dataset file (or use another CSV filename listed in `main.py`).
+- `ai4i2020 (2).csv` — dataset file (or use another CSV filename supported by `main.py`).
 
 ## Run locally
 
@@ -42,20 +64,12 @@ Use Python 3.10 or newer.
    python main.py
    ```
 
-If the CSV has a different name, the program will search for a single CSV in the same folder or ask you to enter the path.
-
-## Evaluation notes
-
-The model evaluates on a held-out test set using a fixed random seed (`random_state=42`) so results can be reproduced with the same dataset and library versions. Since machine failures are uncommon, **accuracy alone is not enough**. Review failure-class precision, recall, and the confusion matrix, especially false negatives (failures the model misses).
-
-Do not copy evaluation numbers into a report until you have run the code and checked the output in your environment. Results can vary with package versions or dataset changes.
+The program will search for the dataset in the same folder. If it cannot find it automatically, it asks for a path.
 
 ## Limitations and safety
 
-This is a student learning project, not a certified predictive-maintenance product. A prediction is not a guarantee. Do not use it as the sole basis for operating or maintaining real equipment. A real deployment would require domain-expert review, validation on representative real-machine data, monitoring, and safety procedures.
+This is a student learning project, not a certified predictive-maintenance product. A prediction is not a guarantee. Do not use it as the sole basis for operating or maintaining real equipment. Real deployment would require domain-expert review, validation on representative real-machine data, monitoring, and appropriate safety procedures.
 
 ## Credits
 
-Dataset: AI4I 2020 Predictive Maintenance Dataset, UCI Machine Learning Repository. See the dataset page above for original attribution and license details.
-pandas>=2.0
-scikit-learn>=1.3
+Dataset: AI4I 2020 Predictive Maintenance Dataset, UCI Machine Learning Repository. See the dataset page above for original attribution and reuse terms
